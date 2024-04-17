@@ -16,6 +16,8 @@ jobs:
             release-cache-git
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - name: Drop development version
         run: python -c "import update_version; update_version.drop_development_version()"
       - name: Push changes
