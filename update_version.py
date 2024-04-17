@@ -63,6 +63,12 @@ def __update_version(major: int, minor: int, patch: int, dev: Optional[int]):
     __write_version_file(updated_version)
 
 
+def drop_development_version():
+    major, minor, patch, dev = __get_current_version()
+    dev = None
+    __update_version(major, minor, patch, dev)
+
+
 def increment_development_version():
     major, minor, patch, dev = __get_current_version()
     dev = 1 if dev is None else dev + 1
