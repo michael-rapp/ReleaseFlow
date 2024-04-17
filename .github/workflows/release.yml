@@ -23,6 +23,7 @@ jobs:
         with:
           add: 'VERSION'
           message: '[Bot] Drop development version.'
+          push: origin HEAD:${{ github.head_ref }}
       - name: Merge into feature branch
         run: |
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
