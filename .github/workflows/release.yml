@@ -7,13 +7,6 @@ jobs:
     name: Merge release version
     runs-on: ubuntu-latest
     steps:
-      - name: Look up Git repository in cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .git/
-          key: release-cache-git-${{ github.run_id }}
-          restore-keys: |
-            release-cache-git
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -41,9 +34,3 @@ jobs:
           git checkout bugfix
           git merge feature --no-edit --strategy-option theirs
           git push
-      - name: Save Git repository to cache
-        uses: actions/cache/save@v4
-        if: success() || failure()
-        with:
-          path: .git/
-          key: release-cache-git-${{ github.run_id }}

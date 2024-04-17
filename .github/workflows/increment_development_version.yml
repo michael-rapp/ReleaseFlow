@@ -8,13 +8,6 @@ jobs:
     name: Update development version
     runs-on: ubuntu-latest
     steps:
-      - name: Look up Git repository in cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .git/
-          key: update-development-version-cache-git-${{ github.run_id }}
-          restore-keys: |
-            update-development-version-cache-git
       - name: Checkout
         uses: actions/checkout@v4
       - name: Increment development version
@@ -24,9 +17,3 @@ jobs:
         with:
           add: 'VERSION'
           message: '[Bot] Update development version.'
-      - name: Save Git repository to cache
-        uses: actions/cache/save@v4
-        if: success() || failure()
-        with:
-          path: .git/
-          key: update-development-version-cache-git-${{ github.run_id }}
