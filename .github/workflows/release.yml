@@ -13,6 +13,7 @@ jobs:
         uses: fregante/setup-git-user@v2
       - name: Drop development version
         run: |
+          git fetch origin ${{ github.event.release.target_commitish }}:${{ github.event.release.target_commitish }}
           git checkout ${{ github.event.release.target_commitish }}
           python -c "import update_version; update_version.drop_development_version()"
           git add VERSION
@@ -21,12 +22,14 @@ jobs:
       - name: Merge into feature branch
         if: ${{ github.event.release.target_commitish == 'main' }}
         run: |
+          git fetch origin feature:feature
           git checkout feature
           git merge main --no-edit --strategy-option theirs
           git push
       - name: Merge into bugfix branch
         if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
         run: |
+          git fetch origin feature:feature
           git checkout bugfix
           git merge feature --no-edit --strategy-option theirs
           git push
