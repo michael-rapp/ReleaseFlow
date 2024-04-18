@@ -25,12 +25,12 @@ jobs:
       - name: Merge into feature branch
         if: ${{ github.event.release.target_commitish == 'main' }}
         run: |
-          git checkout feature
+          git checkout -b feature origin/feature
           git merge origin/main --no-edit --strategy-option theirs
           git push origin feature
       - name: Merge into bugfix branch
         if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
         run: |
-          git checkout bugfix
+          git checkout -b bugfix origin/bugfix
           git merge origin/feature --no-edit --strategy-option theirs
           git push origin feature
