@@ -34,4 +34,4 @@ jobs:
         run: |
           git checkout -b bugfix origin/bugfix
           git merge origin/feature --no-edit --strategy-option theirs
-          git push origin feature
+          git push origin bugfix
