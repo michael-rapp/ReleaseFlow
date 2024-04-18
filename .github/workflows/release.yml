@@ -14,7 +14,7 @@ jobs:
       - name: Checkout release branch
         run: |
           git fetch origin ${{ github.event.release.target_commitish }}:${{ github.event.release.target_commitish }}
-          git checkout -b ${{ github.event.release.target_commitish }} origin/${{ github.event.release.target_commitish }}
+          git checkout ${{ github.event.release.target_commitish }}
       - name: Drop development version
         continue-on-error: true
         run: |
