@@ -21,7 +21,7 @@ jobs:
         run: |
           python -c "import update_version; update_version.increment_major_version()"
           git add VERSION
-          git commit -m "[Bot] Updated version to $(cat VERSION)."
+          git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin main
       - name: Merge into feature branch
         if: ${{ github.event.release.target_commitish == 'main' }}
@@ -30,7 +30,7 @@ jobs:
           git merge origin/main --no-edit --strategy-option theirs
           python -c "import update_version; update_version.increment_minor_version()"
           git add VERSION
-          git commit -m "[Bot] Updated version to $(cat VERSION)."
+          git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin feature
       - name: Merge into bugfix branch
         if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
@@ -39,5 +39,5 @@ jobs:
           git merge origin/feature --no-edit --strategy-option theirs
           python -c "import update_version; update_version.increment_patch_version()"
           git add VERSION
-          git commit -m "[Bot] Updated version to $(cat VERSION)."
+          git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin bugfix
