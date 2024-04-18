@@ -10,10 +10,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup git
+        uses: fregante/setup-git-user@v2
       - name: Increment development version
-        run: python -c "import update_version; update_version.increment_development_version()"
-      - name: Push changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          add: 'VERSION'
-          message: '[Bot] Update development version.'
+        run: |
+          python -c "import update_version; update_version.increment_development_version()"
+          git add VERSION
+          git commit -m "[Bot] Update version to $(cat VERSION)."
+          git push
