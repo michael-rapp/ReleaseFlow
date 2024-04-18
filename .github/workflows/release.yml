@@ -18,18 +18,18 @@ jobs:
           python -c "import update_version; update_version.drop_development_version()"
           git add VERSION
           git commit -m "[Bot] Updated version to $(cat VERSION)."
-          git push
+          git push origin ${{ github.event.release.target_commitish }}
       - name: Merge into feature branch
         if: ${{ github.event.release.target_commitish == 'main' }}
         run: |
           git fetch origin feature:feature
           git checkout feature
           git merge main --no-edit --strategy-option theirs
-          git push
+          git push origin feature
       - name: Merge into bugfix branch
         if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
         run: |
           git fetch origin feature:feature
           git checkout bugfix
           git merge feature --no-edit --strategy-option theirs
-          git push
+          git push origin feature
