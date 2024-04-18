@@ -1,0 +1,35 @@
+name: Merge release version
+on:
+  release:
+    types: [ published ]
+jobs:
+  merge_release_version:
+    name: Merge release version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup git
+        uses: fregante/setup-git-user@v2
+      - name: Drop development version
+        run: |
+          git fetch origin ${{ github.event.release.target_commitish }}:${{ github.event.release.target_commitish }}
+          git checkout -b ${{ github.event.release.target_commitish }} origin/${{ github.event.release.target_commitish }}
+          python -c "import update_version; update_version.drop_development_version()"
+          git add VERSION
+          git commit -m "[Bot] Updated version to $(cat VERSION)."
+          git push origin ${{ github.event.release.target_commitish }}
+      - name: Merge into feature branch
+        if: ${{ github.event.release.target_commitish == 'main' }}
+        run: |
+          git fetch origin feature:feature
+          git checkout -b feature origin/feature
+          git merge origin/main --no-edit --strategy-option theirs
+          git push origin feature
+      - name: Merge into bugfix branch
+        if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
+        run: |
+          git fetch origin feature:feature
+          git checkout -b bugfix origin/bugfix
+          git merge origin/feature --no-edit --strategy-option theirs
+          git push origin feature
