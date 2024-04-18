@@ -9,12 +9,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup git
         uses: fregante/setup-git-user@v2
       - name: Checkout release branch
         run: |
-          git fetch origin ${{ github.event.release.target_commitish }}:${{ github.event.release.target_commitish }}
-          git checkout -b ${{ github.event.release.target_commitish }} origin/${{ github.event.release.target_commitish }}
+          git checkout ${{ github.event.release.target_commitish }}
       - name: Drop development version
         continue-on-error: true
         run: |
@@ -25,14 +26,12 @@ jobs:
       - name: Merge into feature branch
         if: ${{ github.event.release.target_commitish == 'main' }}
         run: |
-          git fetch origin feature:feature
           git checkout -b feature origin/feature
           git merge origin/main --no-edit --strategy-option theirs
           git push origin feature
       - name: Merge into bugfix branch
         if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
         run: |
-          git fetch origin feature:feature
           git checkout -b bugfix origin/bugfix
           git merge origin/feature --no-edit --strategy-option theirs
           git push origin feature
