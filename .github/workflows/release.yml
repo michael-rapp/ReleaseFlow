@@ -16,4 +16,4 @@ jobs:
           python -c "import update_version; update_version.drop_development_version()"
           git add VERSION
           git commit -m "[Bot] Updated version to $(cat VERSION)."
-          git push ${{ github.event.release.target_commitish }}
+          git push origin HEAD:${{ github.event.release.target_commitish }}
