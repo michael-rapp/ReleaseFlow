@@ -11,10 +11,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup git
         uses: fregante/setup-git-user@v2
-      - name: Drop development version
+      - name: Checkout release branch
         run: |
           git fetch origin ${{ github.event.release.target_commitish }}:${{ github.event.release.target_commitish }}
           git checkout -b ${{ github.event.release.target_commitish }} origin/${{ github.event.release.target_commitish }}
+      - name: Drop development version
+        continue-on-error: true
+        run: |
           python -c "import update_version; update_version.drop_development_version()"
           git add VERSION
           git commit -m "[Bot] Updated version to $(cat VERSION)."
