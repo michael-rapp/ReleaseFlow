@@ -31,7 +31,7 @@ jobs:
         with:
           commit-message: "[Bot] Merge feature into main branch."
           branch: merge-feature
-          title: "[Bot] Merge feature into main branch"
+          title: "Merge feature into main branch"
           labels: bot
           body: "Merge branch \"feature\" into \"main\"."
       - name: Enable auto-merge
