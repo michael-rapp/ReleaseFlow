@@ -15,8 +15,10 @@ jobs:
           ref: main
       - name: Reset feature branch
         run: |
+          export MAIN_VERSION="$(cat VERSION)"
           git fetch origin feature:feature
           git reset --hard feature
+          echo $MAIN_VERSION > VERSION
       - name: Create pull request
         id: pr
         uses: peter-evans/create-pull-request@v6
