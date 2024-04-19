@@ -7,6 +7,7 @@ jobs:
   merge_feature:
     name: Merge feature into main branch
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[Bot]')"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +27,6 @@ jobs:
           labels: bot
           body: "Merge branch \"feature\" into \"main\"."
       - name: Enable auto-merge
-        run: gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
+        run: gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
