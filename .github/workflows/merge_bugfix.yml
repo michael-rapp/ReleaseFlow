@@ -25,7 +25,7 @@ jobs:
         with:
           commit-message: "[Bot] Merge bugfix into feature branch."
           branch: merge-bugfix
-          title: "[Bot] Merge bugfix into feature branch"
+          title: "Merge bugfix into feature branch"
           labels: bot
           body: "Merge branch \"bugfix\" into \"feature\"."
       - name: Enable auto-merge
