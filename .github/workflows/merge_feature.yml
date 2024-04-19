@@ -28,5 +28,5 @@ jobs:
           body: "Merge branch \"feature\" into \"main\"."
       - name: Enable auto-merge
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
         run: gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
