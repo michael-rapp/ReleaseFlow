@@ -4,12 +4,6 @@ on:
     branches:
       - 'feature'
 jobs:
-  debug:
-    name: Debug output
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print
-        run: echo "${{ github.event.head_commit.message }}"
   merge_feature:
     name: Merge feature into main branch
     runs-on: ubuntu-latest
