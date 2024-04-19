@@ -27,6 +27,6 @@ jobs:
           labels: bot
           body: "Merge branch \"feature\" into \"main\"."
       - name: Enable auto-merge
-        run: gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
         env:
           GH_TOKEN: ${{ secrets.PAT }}
+        run: gh pr merge --merge --auto "${{ steps.pr.outputs.pull-request-number }}"
