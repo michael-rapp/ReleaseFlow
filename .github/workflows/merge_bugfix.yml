@@ -19,7 +19,7 @@ jobs:
           git fetch origin bugfix:bugfix
           git reset --hard bugfix
           echo $FEATURE_VERSION > VERSION
-      - name: Generate token for submitting pull request
+      - name: Generate token
         uses: actions/create-github-app-token@v1
         id: generate-token
         with:
