@@ -1,0 +1,13 @@
+name: Test pull requests
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+jobs:
+  test:
+    name: Make some tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Make some tests
+        run: echo "Hello"
