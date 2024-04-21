@@ -3,3 +3,4 @@ This is a bugfix!
 This is another bugfix!
 This is another feature!
 This is where our first feature release (hopefully) takes place someday!
+This is a bugfix merged via pull request
