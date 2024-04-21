@@ -19,10 +19,17 @@ jobs:
           git fetch origin bugfix:bugfix
           git reset --hard bugfix
           echo $FEATURE_VERSION > VERSION
-      - name: Create pull request
+      - name: Generate token for submitting pull request
+        uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Submit pull request
         id: pr
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ steps.generate-token.outputs.token }}
           commit-message: "[Bot] Merge bugfix into feature branch."
           branch: merge-bugfix
           title: "Merge bugfix into feature branch"
