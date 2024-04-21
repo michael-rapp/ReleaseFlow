@@ -20,11 +20,11 @@ jobs:
           git reset --hard feature
           echo $MAIN_VERSION > VERSION
       - name: Generate token for submitting pull request
-        uses: tibdex/github-app-token@v2
+        uses: actions/create-github-app-token@v1
         id: generate-token
         with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: Submit pull request
         id: pr
         uses: peter-evans/create-pull-request@v6
