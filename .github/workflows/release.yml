@@ -7,10 +7,17 @@ jobs:
     name: Merge release version
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
       - name: Setup git
         uses: fregante/setup-git-user@v2
       - name: Checkout release branch
