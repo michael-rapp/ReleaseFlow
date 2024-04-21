@@ -2,3 +2,4 @@ This is the first feature!
 This is a bugfix!
 This is another bugfix!
 This is another feature!
+This is where a feature release takes place!
