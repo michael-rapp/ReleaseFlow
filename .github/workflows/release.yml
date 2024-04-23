@@ -44,13 +44,11 @@ jobs:
           git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin main
           git checkout feature
-          python -c "import update_version; update_version.increment_major_version()"
           python -c "import update_version; update_version.increment_minor_version()"
           git add VERSION
           git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin feature
           git checkout bugfix
-          python -c "import update_version; update_version.increment_major_version()"
           python -c "import update_version; update_version.increment_patch_version()"
           git add VERSION
           git commit -m "[Bot] Update version to $(cat VERSION)."
@@ -64,7 +62,6 @@ jobs:
           git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin feature
           git checkout bugfix
-          python -c "import update_version; update_version.increment_minor_version()"
           python -c "import update_version; update_version.increment_patch_version()"
           git add VERSION
           git commit -m "[Bot] Update version to $(cat VERSION)."
