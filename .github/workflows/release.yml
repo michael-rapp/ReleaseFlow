@@ -23,27 +23,48 @@ jobs:
       - name: Checkout release branch
         run: |
           git checkout ${{ github.event.release.target_commitish }}
-      - name: Update major version
-        if: ${{ github.event.release.target_commitish == 'main' }}
-        run: |
-          python -c "import update_version; update_version.increment_major_version()"
-          git add VERSION
-          git commit -m "[Bot] Update version to $(cat VERSION)."
-          git push origin main
       - name: Merge into feature branch
         if: ${{ github.event.release.target_commitish == 'main' }}
         run: |
           git checkout -b feature origin/feature
           git merge origin/main --strategy-option theirs -m "[Bot] Merge branch \"main\" into \"feature\"."
-          python -c "import update_version; update_version.increment_minor_version()"
-          git add VERSION
-          git commit -m "[Bot] Update version to $(cat VERSION)."
           git push origin feature
       - name: Merge into bugfix branch
         if: ${{ github.event.release.target_commitish == 'main' }} || ${{ github.event.release.target_commitish == 'feature' }}
         run: |
           git checkout -b bugfix origin/bugfix
-          git merge origin/feature --strategy-option theirs -m "[Bot] Merge branch \"main\" into \"bugfix\"."
+          git merge origin/feature --strategy-option theirs -m "[Bot] Merge branch \"feature\" into \"bugfix\"."
+          git push origin bugfix
+      - name: Update major version
+        if: ${{ github.event.release.target_commitish == 'main' }}
+        run: |
+          git checkout main
+          python -c "import update_version; update_version.increment_major_version()"
+          git add VERSION
+          git commit -m "[Bot] Update version to $(cat VERSION)."
+          git push origin main
+          git checkout feature
+          python -c "import update_version; update_version.increment_major_version()"
+          python -c "import update_version; update_version.increment_minor_version()"
+          git add VERSION
+          git commit -m "[Bot] Update version to $(cat VERSION)."
+          git push origin feature
+          git checkout bugfix
+          python -c "import update_version; update_version.increment_major_version()"
+          python -c "import update_version; update_version.increment_patch_version()"
+          git add VERSION
+          git commit -m "[Bot] Update version to $(cat VERSION)."
+          git push origin bugfix
+      - name: Update minor version
+        if: ${{ github.event.release.target_commitish == 'feature' }}
+        run: |
+          git checkout feature
+          python -c "import update_version; update_version.increment_minor_version()"
+          git add VERSION
+          git commit -m "[Bot] Update version to $(cat VERSION)."
+          git push origin feature
+          git checkout bugfix
+          python -c "import update_version; update_version.increment_minor_version()"
           python -c "import update_version; update_version.increment_patch_version()"
           git add VERSION
           git commit -m "[Bot] Update version to $(cat VERSION)."
@@ -51,8 +72,8 @@ jobs:
       - name: Update patch version
         if: ${{ github.event.release.target_commitish == 'bugfix' }}
         run: |
-            git checkout -b bugfix origin/bugfix
-            python -c "import update_version; update_version.increment_patch_version()"
-            git add VERSION
-            git commit -m "[Bot] Update version to $(cat VERSION)."
-            git push origin bugfix
+          git checkout bugfix
+          python -c "import update_version; update_version.increment_patch_version()"
+          git add VERSION
+          git commit -m "[Bot] Update version to $(cat VERSION)."
+          git push origin bugfix
