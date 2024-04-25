@@ -16,10 +16,10 @@ jobs:
       - name: Reset bugfix branch
         run: |
           export FEATURE_VERSION="$(cat VERSION)"
-          echo "Version of the feature branch is ${FEATURE_VERSION}"
+          echo "Version of the feature branch is \"${FEATURE_VERSION}\""
           git fetch origin bugfix:bugfix
           git reset --hard bugfix
-          echo "${FEATURE_VERSION}" | tee VERSION
+          echo -n "${FEATURE_VERSION}" > VERSION
       - name: Generate token
         uses: actions/create-github-app-token@v1
         id: generate-token
