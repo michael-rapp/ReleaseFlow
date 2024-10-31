@@ -1,0 +1,35 @@
+---
+name: Validate changelog
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  test_changelog:
+    name: Validate changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            main:
+              - '.changelog-main.md'
+            feature:
+              - '.changelog-feature.md'
+            bugfix:
+              - '.changelog-bugfix.md'
+      - name: Validate main changelog
+        if: steps.filter.outputs.main == 'true'
+        run: python -c "import changelog; changelog.validate_changelog_main()"
+      - name: Validate feature changelog
+        if: steps.filter.outputs.feature == 'true'
+        run: python -c "import changelog; changelog.validate_changelog_feature()"
+      - name: Validate bugfix changelog
+        if: steps.filter.outputs.bugfix == 'true'
+        run: python -c "import changelog; changelog.validate_changelog_bugfix()"
