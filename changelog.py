@@ -128,6 +128,18 @@ def __parse_changesets(changelog_file: str) -> List[Changeset]:
     return changesets
 
 
+def __merge_changesets(changesets: List[Changeset]) -> List[Changeset]:
+    changesets_by_header = {}
+
+    for changeset in changesets:
+        merged_changeset = changesets_by_header.setdefault(changeset.header.lower(), changeset)
+
+        if merged_changeset != changeset:
+            merged_changeset.contents.extend(changeset.contents)
+
+    return list(changesets_by_header.values())
+
+
 def validate_changelog_main():
     __parse_changesets(CHANGELOG_FILE_MAIN)
 
@@ -138,3 +150,30 @@ def validate_changelog_feature():
 
 def validate_changelog_bugfix():
     __parse_changesets(CHANGELOG_FILE_BUGFIX)
+
+
+def update_changelog_main():
+    changesets = __parse_changesets(CHANGELOG_FILE_MAIN)
+    changesets.extend(__parse_changesets(CHANGELOG_FILE_FEATURE))
+    changesets.extend(__parse_changesets(CHANGELOG_FILE_BUGFIX))
+    changesets = __merge_changesets(changesets)
+
+    for changeset in changesets:
+        print(str(changeset))
+
+
+def update_changelog_feature():
+    changesets = __parse_changesets(CHANGELOG_FILE_FEATURE)
+    changesets.extend(__parse_changesets(CHANGELOG_FILE_BUGFIX))
+    changesets = __merge_changesets(changesets)
+
+    for changeset in changesets:
+        print(str(changeset))
+
+
+def update_changelog_bugfix():
+    changesets = __parse_changesets(CHANGELOG_FILE_BUGFIX)
+    changesets = __merge_changesets(changesets)
+
+    for changeset in changesets:
+        print(str(changeset))
