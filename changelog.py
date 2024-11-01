@@ -13,6 +13,12 @@ PREFIX_DASH = '- '
 
 PREFIX_ASTERISK = '* '
 
+CHANGELOG_FILE_MAIN = '.changelog-main.md'
+
+CHANGELOG_FILE_FEATURE = '.changelog-feature.md'
+
+CHANGELOG_FILE_BUGFIX = '.changelog-bugfix.md'
+
 
 class LineType(Enum):
     BLANK = auto()
@@ -123,12 +129,12 @@ def __parse_changesets(changelog_file: str) -> List[Changeset]:
 
 
 def validate_changelog_main():
-    __parse_changesets('.changelog-main.md')
+    __parse_changesets(CHANGELOG_FILE_MAIN)
 
 
 def validate_changelog_feature():
-    __parse_changesets('.changelog-feature.md')
+    __parse_changesets(CHANGELOG_FILE_FEATURE)
 
 
 def validate_changelog_bugfix():
-    __parse_changesets('.changelog-bugfix.md')
+    __parse_changesets(CHANGELOG_FILE_BUGFIX)
