@@ -34,13 +34,14 @@ class LineType(Enum):
 class Line:
     line_number: int
     line_type: LineType
+    line: str
     content: str
 
 
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
     line_type = LineType.parse(line)
 
-    if not line_type or (line_type != LineType.BLANK and len([part for part in line.split(' ') if part]) < 2):
+    if not line_type:
         print(
             'Line ' + str(line_number) + ' of file "' + changelog_file
             + '" is invalid: Must be blank, a top-level header (starting with "' + PREFIX_HEADER
@@ -48,7 +49,18 @@ def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
             + '"), but is "' + line + '"')
         exit(-1)
 
-    return Line(line_number=line_number, line_type=line_type, content=line)
+    content = line
+
+    if line_type != LineType.BLANK:
+        content = line.lstrip(PREFIX_HEADER).lstrip(PREFIX_DASH).lstrip(PREFIX_ASTERISK)
+
+        if not content or content.isspace():
+            print(
+                'Line ' + str(line_number) + ' of file "' + changelog_file
+                + '" is is invalid: Content must not be blank, but is "' + line + '"')
+            exit(-1)
+
+    return Line(line_number=line_number, line_type=line_type, line=line, content=content)
 
 
 def __validate_line(changelog_file: str, line: Optional[Line], previous_line: Optional[Line]):
@@ -58,7 +70,7 @@ def __validate_line(changelog_file: str, line: Optional[Line], previous_line: Op
         exit(-1)
     if (line and line.line_type == LineType.HEADER and previous_line and previous_line.line_type == LineType.HEADER) \
             or (not line and previous_line and previous_line.line_type == LineType.HEADER):
-        print('Header "' + previous_line.content + '" at line ' + str(previous_line.line_number) + ' of file "' +
+        print('Header "' + previous_line.line + '" at line ' + str(previous_line.line_number) + ' of file "' +
               changelog_file + '" is not followed by any content')
         exit(-1)
 
