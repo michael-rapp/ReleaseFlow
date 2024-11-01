@@ -5,7 +5,7 @@ Provides utility functions for maintaining the project's changelog.
 """
 from typing import List, Optional
 from enum import Enum, auto
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 PREFIX_HEADER = '# '
 
@@ -36,6 +36,12 @@ class Line:
     line_type: LineType
     line: str
     content: str
+
+
+@dataclass
+class Changeset:
+    header: str
+    contents: List[str] = field(default_factory=list)
 
 
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
@@ -92,18 +98,29 @@ def __parse_lines(changelog_file: str, lines: List[str]) -> List[Line]:
     return parsed_lines
 
 
-def __parse_changelog(changelog_file: str) -> List[Line]:
+def __parse_changesets(changelog_file: str) -> List[Changeset]:
+    changesets = []
+
     with open(changelog_file, mode='r', encoding='utf-8') as file:
-        return __parse_lines(changelog_file=changelog_file, lines=file.readlines())
+        lines = __parse_lines(changelog_file=changelog_file, lines=file.readlines())
+
+        for line in lines:
+            if line.line_type == LineType.HEADER:
+                changesets.append(Changeset(header=line.content))
+            elif line.line_type == LineType.ENUMERATION:
+                current_changeset = changesets[-1]
+                current_changeset.contents.append(line.content)
+
+    return changesets
 
 
 def validate_changelog_main():
-    __parse_changelog('.changelog-main.md')
+    __parse_changesets('.changelog-main.md')
 
 
 def validate_changelog_feature():
-    __parse_changelog('.changelog-feature.md')
+    __parse_changesets('.changelog-feature.md')
 
 
 def validate_changelog_bugfix():
-    __parse_changelog('.changelog-bugfix.md')
+    __parse_changesets('.changelog-bugfix.md')
