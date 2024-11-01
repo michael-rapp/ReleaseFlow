@@ -43,6 +43,14 @@ class Changeset:
     header: str
     contents: List[str] = field(default_factory=list)
 
+    def __str__(self) -> str:
+        changeset = '# ' + self.header + '\n\n'
+
+        for content in self.contents:
+            changeset += '- ' + content + '\n'
+
+        return changeset
+
 
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
     line_type = LineType.parse(line)
