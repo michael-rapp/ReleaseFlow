@@ -71,6 +71,10 @@ def __update_version(version: Version):
     __write_version_file(updated_version)
 
 
+def get_current_version() -> Version:
+    return __parse_version(__read_version_file())
+
+
 def drop_development_version():
     version = __get_current_version()
     version.dev = None
