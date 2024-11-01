@@ -6,6 +6,8 @@ Provides utility functions for maintaining the project's changelog.
 from typing import List, Optional
 from enum import Enum, auto
 from dataclasses import dataclass, field
+from update_version import Version, get_current_version
+from datetime import date
 
 PREFIX_HEADER = '# '
 
@@ -56,6 +58,13 @@ class Changeset:
             changeset += '- ' + content + '\n'
 
         return changeset
+
+
+@dataclass
+class Release:
+    version: Version
+    release_date: date
+    changesets: List[Changeset] = field(default_factory=list)
 
 
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
@@ -128,16 +137,22 @@ def __parse_changesets(changelog_file: str) -> List[Changeset]:
     return changesets
 
 
-def __merge_changesets(changesets: List[Changeset]) -> List[Changeset]:
+def __merge_changesets(*changelog_files) -> List[Changeset]:
     changesets_by_header = {}
 
-    for changeset in changesets:
-        merged_changeset = changesets_by_header.setdefault(changeset.header.lower(), changeset)
+    for changelog_file in changelog_files:
+        for changeset in __parse_changesets(changelog_file):
+            merged_changeset = changesets_by_header.setdefault(changeset.header.lower(), changeset)
 
-        if merged_changeset != changeset:
-            merged_changeset.contents.extend(changeset.contents)
+            if merged_changeset != changeset:
+                merged_changeset.contents.extend(changeset.contents)
 
     return list(changesets_by_header.values())
+
+
+def __create_release(*changelog_files) -> Release:
+    return Release(version=get_current_version(), release_date=date.today(),
+                   changesets=__merge_changesets(*changelog_files))
 
 
 def validate_changelog_main():
@@ -153,27 +168,15 @@ def validate_changelog_bugfix():
 
 
 def update_changelog_main():
-    changesets = __parse_changesets(CHANGELOG_FILE_MAIN)
-    changesets.extend(__parse_changesets(CHANGELOG_FILE_FEATURE))
-    changesets.extend(__parse_changesets(CHANGELOG_FILE_BUGFIX))
-    changesets = __merge_changesets(changesets)
-
-    for changeset in changesets:
-        print(str(changeset))
+    release = __create_release(CHANGELOG_FILE_MAIN, CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
+    print(str(release))
 
 
 def update_changelog_feature():
-    changesets = __parse_changesets(CHANGELOG_FILE_FEATURE)
-    changesets.extend(__parse_changesets(CHANGELOG_FILE_BUGFIX))
-    changesets = __merge_changesets(changesets)
-
-    for changeset in changesets:
-        print(str(changeset))
+    release = __create_release(CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
+    print(str(release))
 
 
 def update_changelog_bugfix():
-    changesets = __parse_changesets(CHANGELOG_FILE_BUGFIX)
-    changesets = __merge_changesets(changesets)
-
-    for changeset in changesets:
-        print(str(changeset))
+    release = __create_release(CHANGELOG_FILE_BUGFIX)
+    print(str(release))
