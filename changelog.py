@@ -96,9 +96,17 @@ class Release:
         return self.__format_release_month(self.release_date.month) + '. ' + self.__format_release_day(
             self.release_date.day) + ', ' + str(self.release_date.year)
 
+    def __format_disclaimer(self) -> str:
+        if [changeset for changeset in self.changesets if changeset.header.lower() == 'api changes']:
+            return ('```{warning}\nThis release comes with API changes. For an updated overview of the available '
+                    + 'parameters and command line arguments, please refer to the '
+                    + '[documentation](https://documentation/en/' + str(self.version) + '/).\n```\n\n')
+        return ''
+
     def __str__(self) -> str:
         release = PREFIX_SUB_HEADER + 'Version ' + str(self.version) + ' (' + self.__format_release_date() + ')\n\n'
         release += 'A ' + self.release_type.value + ' release that comes with the following changes.\n\n'
+        release += self.__format_disclaimer()
 
         for i, changeset in enumerate(self.changesets):
             release += str(changeset) + ('\n' if i < len(self.changesets) else '\n\n')
