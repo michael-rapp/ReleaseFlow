@@ -6,10 +6,18 @@ on:
       release_branch:
         required: true
         type: string
+    outputs:
+      release_version:
+        value: ${{ jobs.update_changelog.outputs.release_version }}
+      latest_changelog:
+        value: ${{ jobs.update_changelog.outputs.latest_changelog }}
 jobs:
   update_changelog:
     name: Update changelog
     runs-on: ubuntu-latest
+    outputs:
+      release_version: ${{ steps.print_version.outputs.version }}
+      latest_changelog: ${{ steps.print_latest_changelog.outputs.changelog }}
     steps:
       - name: Generate token
         uses: actions/create-github-app-token@v1
@@ -41,3 +49,7 @@ jobs:
           git add CHANGELOG.md
           git commit -m "[Bot] Update changelog."
           git push
+      - id: print_version
+        run: echo "version=$(python -c "import update_version; update_version.print_current_version()")" >> $GITHUB_OUTPUT
+      - id: print_latest_changelog
+        run: echo "changelog=$(python -c "import changelog; changelog.print_latest_changelog()")" >> $GITHUB_OUTPUT
