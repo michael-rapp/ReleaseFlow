@@ -1,0 +1,9 @@
+---
+name: Trigger bugfix release
+on: workflow_dispatch
+jobs:
+  release:
+    name: Bugfix release
+    uses: ./.github/workflows/template_update_changelog.yml
+    with:
+      release_branch: bugfix

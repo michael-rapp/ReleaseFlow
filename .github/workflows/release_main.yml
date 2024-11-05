@@ -1,0 +1,9 @@
+---
+name: Trigger main release
+on: workflow_dispatch
+jobs:
+  release:
+    name: Main release
+    uses: ./.github/workflows/template_update_changelog.yml
+    with:
+      release_branch: main

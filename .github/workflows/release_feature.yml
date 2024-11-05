@@ -1,0 +1,9 @@
+---
+name: Trigger feature release
+on: workflow_dispatch
+jobs:
+  release:
+    name: Feature release
+    uses: ./.github/workflows/template_update_changelog.yml
+    with:
+      release_branch: feature
