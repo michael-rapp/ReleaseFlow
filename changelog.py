@@ -66,10 +66,17 @@ class Changeset:
         return changeset
 
 
+class ReleaseType(Enum):
+    MAJOR = 'major'
+    MINOR = 'feature'
+    PATCH = 'bugfix'
+
+
 @dataclass
 class Release:
     version: Version
     release_date: date
+    release_type: ReleaseType
     changesets: List[Changeset] = field(default_factory=list)
 
     @staticmethod
@@ -91,6 +98,7 @@ class Release:
 
     def __str__(self) -> str:
         release = PREFIX_SUB_HEADER + 'Version ' + str(self.version) + ' (' + self.__format_release_date() + ')\n\n'
+        release += 'A ' + self.release_type.value + ' release that comes with the following changes.\n\n'
 
         for i, changeset in enumerate(self.changesets):
             release += str(changeset) + ('\n' if i < len(self.changesets) else '\n\n')
@@ -189,8 +197,8 @@ def __merge_changesets(*changelog_files) -> List[Changeset]:
     return list(changesets_by_header.values())
 
 
-def __create_release(*changelog_files) -> Release:
-    return Release(version=get_current_version(), release_date=date.today(),
+def __create_release(release_type: ReleaseType, *changelog_files) -> Release:
+    return Release(version=get_current_version(), release_date=date.today(), release_type=release_type,
                    changesets=__merge_changesets(*changelog_files))
 
 
@@ -210,8 +218,8 @@ def __add_release_to_changelog(changelog_file: str, new_release: Release):
     __write_lines(changelog_file, modified_lines)
 
 
-def __update_changelog(*changelog_files):
-    new_release = __create_release(*changelog_files)
+def __update_changelog(release_type: ReleaseType, *changelog_files):
+    new_release = __create_release(release_type, *changelog_files)
     __add_release_to_changelog('CHANGELOG.md', new_release)
 
 
@@ -228,12 +236,12 @@ def validate_changelog_bugfix():
 
 
 def update_changelog_main():
-    __update_changelog(CHANGELOG_FILE_MAIN, CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
+    __update_changelog(ReleaseType.MAJOR, CHANGELOG_FILE_MAIN, CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
 
 
 def update_changelog_feature():
-    __update_changelog(CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
+    __update_changelog(ReleaseType.MINOR, CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
 
 
 def update_changelog_bugfix():
-    __update_changelog(CHANGELOG_FILE_BUGFIX)
+    __update_changelog(ReleaseType.PATCH, CHANGELOG_FILE_BUGFIX)
