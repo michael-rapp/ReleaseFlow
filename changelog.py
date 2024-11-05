@@ -67,6 +67,11 @@ class Release:
     changesets: List[Changeset] = field(default_factory=list)
 
 
+@dataclass
+class Changelog:
+    releases: List[Release] = field(default_factory=list)
+
+
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
     line_type = LineType.parse(line)
 
@@ -121,18 +126,21 @@ def __parse_lines(changelog_file: str, lines: List[str]) -> List[Line]:
     return parsed_lines
 
 
+def __read_lines(changelog_file: str) -> List[str]:
+    with open(changelog_file, mode='r', encoding='utf-8') as file:
+        return file.readlines()
+
+
 def __parse_changesets(changelog_file: str) -> List[Changeset]:
     changesets = []
+    lines = __parse_lines(changelog_file, __read_lines(changelog_file))
 
-    with open(changelog_file, mode='r', encoding='utf-8') as file:
-        lines = __parse_lines(changelog_file=changelog_file, lines=file.readlines())
-
-        for line in lines:
-            if line.line_type == LineType.HEADER:
-                changesets.append(Changeset(header=line.content))
-            elif line.line_type == LineType.ENUMERATION:
-                current_changeset = changesets[-1]
-                current_changeset.contents.append(line.content)
+    for line in lines:
+        if line.line_type == LineType.HEADER:
+            changesets.append(Changeset(header=line.content))
+        elif line.line_type == LineType.ENUMERATION:
+            current_changeset = changesets[-1]
+            current_changeset.contents.append(line.content)
 
     return changesets
 
@@ -153,6 +161,12 @@ def __merge_changesets(*changelog_files) -> List[Changeset]:
 def __create_release(*changelog_files) -> Release:
     return Release(version=get_current_version(), release_date=date.today(),
                    changesets=__merge_changesets(*changelog_files))
+
+
+def __parse_changelog(changelog_file: str) -> Changelog:
+    lines = __read_lines(changelog_file)
+    lines = __parse_lines(changelog_file=changelog_file, lines=lines)
+    return Changelog()
 
 
 def validate_changelog_main():
