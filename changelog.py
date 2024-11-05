@@ -230,6 +230,9 @@ def __update_changelog(release_type: ReleaseType, *changelog_files):
     new_release = __create_release(release_type, *changelog_files)
     __add_release_to_changelog('CHANGELOG.md', new_release)
 
+    for changelog_file in changelog_files:
+        __write_lines(changelog_file, [''])
+
 
 def validate_changelog_main():
     __parse_changesets(CHANGELOG_FILE_MAIN)
