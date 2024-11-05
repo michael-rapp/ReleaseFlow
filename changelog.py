@@ -11,6 +11,10 @@ from datetime import date
 
 PREFIX_HEADER = '# '
 
+PREFIX_SUB_HEADER = '## '
+
+PREFIX_SUB_SUB_HEADER = '### '
+
 PREFIX_DASH = '- '
 
 PREFIX_ASTERISK = '* '
@@ -20,6 +24,8 @@ CHANGELOG_FILE_MAIN = '.changelog-main.md'
 CHANGELOG_FILE_FEATURE = '.changelog-feature.md'
 
 CHANGELOG_FILE_BUGFIX = '.changelog-bugfix.md'
+
+CHANGELOG_ENCODING = 'utf-8'
 
 
 class LineType(Enum):
@@ -52,10 +58,10 @@ class Changeset:
     contents: List[str] = field(default_factory=list)
 
     def __str__(self) -> str:
-        changeset = '# ' + self.header + '\n\n'
+        changeset = PREFIX_SUB_SUB_HEADER + self.header + '\n\n'
 
         for content in self.contents:
-            changeset += '- ' + content + '\n'
+            changeset += PREFIX_DASH + content + '\n'
 
         return changeset
 
@@ -66,10 +72,30 @@ class Release:
     release_date: date
     changesets: List[Changeset] = field(default_factory=list)
 
+    @staticmethod
+    def __format_release_month(month: int) -> str:
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month - 1]
 
-@dataclass
-class Changelog:
-    releases: List[Release] = field(default_factory=list)
+    @staticmethod
+    def __format_release_day(day: int) -> str:
+        if 11 <= (day % 100) <= 13:
+            suffix = 'th'
+        else:
+            suffix = ['th', 'st', 'nd', 'rd', 'th'][min(day % 10, 4)]
+
+        return str(day) + suffix
+
+    def __format_release_date(self) -> str:
+        return self.__format_release_month(self.release_date.month) + '. ' + self.__format_release_day(
+            self.release_date.day) + ', ' + str(self.release_date.year)
+
+    def __str__(self) -> str:
+        release = PREFIX_SUB_HEADER + 'Version ' + str(self.version) + ' (' + self.__format_release_date() + ')\n\n'
+
+        for i, changeset in enumerate(self.changesets):
+            release += str(changeset) + ('\n' if i < len(self.changesets) else '\n\n')
+
+        return release
 
 
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
@@ -127,8 +153,13 @@ def __parse_lines(changelog_file: str, lines: List[str]) -> List[Line]:
 
 
 def __read_lines(changelog_file: str) -> List[str]:
-    with open(changelog_file, mode='r', encoding='utf-8') as file:
+    with open(changelog_file, mode='r', encoding=CHANGELOG_ENCODING) as file:
         return file.readlines()
+
+
+def __write_lines(changelog_file: str, lines: List[str]):
+    with open(changelog_file, mode='w', encoding=CHANGELOG_ENCODING) as file:
+        file.writelines(lines)
 
 
 def __parse_changesets(changelog_file: str) -> List[Changeset]:
@@ -163,10 +194,25 @@ def __create_release(*changelog_files) -> Release:
                    changesets=__merge_changesets(*changelog_files))
 
 
-def __parse_changelog(changelog_file: str) -> Changelog:
-    lines = __read_lines(changelog_file)
-    lines = __parse_lines(changelog_file=changelog_file, lines=lines)
-    return Changelog()
+def __add_release_to_changelog(changelog_file: str, new_release: Release):
+    original_lines = __read_lines(changelog_file)
+    modified_lines = []
+    offset = 0
+
+    for offset, line in enumerate(original_lines):
+        if line.startswith(PREFIX_SUB_HEADER):
+            break
+
+        modified_lines.append(line)
+
+    modified_lines.append(str(new_release))
+    modified_lines.extend(original_lines[offset:])
+    __write_lines(changelog_file, modified_lines)
+
+
+def __update_changelog(*changelog_files):
+    new_release = __create_release(*changelog_files)
+    __add_release_to_changelog('CHANGELOG.md', new_release)
 
 
 def validate_changelog_main():
@@ -182,15 +228,12 @@ def validate_changelog_bugfix():
 
 
 def update_changelog_main():
-    release = __create_release(CHANGELOG_FILE_MAIN, CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
-    print(str(release))
+    __update_changelog(CHANGELOG_FILE_MAIN, CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
 
 
 def update_changelog_feature():
-    release = __create_release(CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
-    print(str(release))
+    __update_changelog(CHANGELOG_FILE_FEATURE, CHANGELOG_FILE_BUGFIX)
 
 
 def update_changelog_bugfix():
-    release = __create_release(CHANGELOG_FILE_BUGFIX)
-    print(str(release))
+    __update_changelog(CHANGELOG_FILE_BUGFIX)
