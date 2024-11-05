@@ -73,6 +73,7 @@ class Changelog:
 
 
 def __parse_line(changelog_file: str, line_number: int, line: str) -> Line:
+    line = line.strip('\n')
     line_type = LineType.parse(line)
 
     if not line_type:
@@ -114,7 +115,6 @@ def __parse_lines(changelog_file: str, lines: List[str]) -> List[Line]:
     parsed_lines = []
 
     for i, line in enumerate(lines):
-        line = line.strip('\n')
         current_line = __parse_line(changelog_file=changelog_file, line_number=(i + 1), line=line)
 
         if current_line.line_type != LineType.BLANK:
