@@ -75,6 +75,10 @@ def get_current_version() -> Version:
     return __parse_version(__read_version_file())
 
 
+def print_current_version():
+    return print(str(get_current_version()))
+
+
 def drop_development_version():
     version = __get_current_version()
     version.dev = None
