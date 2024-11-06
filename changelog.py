@@ -25,6 +25,8 @@ CHANGELOG_FILE_FEATURE = '.changelog-feature.md'
 
 CHANGELOG_FILE_BUGFIX = '.changelog-bugfix.md'
 
+CHANGELOG_FILE = 'CHANGELOG.md'
+
 CHANGELOG_ENCODING = 'utf-8'
 
 
@@ -228,10 +230,34 @@ def __add_release_to_changelog(changelog_file: str, new_release: Release):
 
 def __update_changelog(release_type: ReleaseType, *changelog_files):
     new_release = __create_release(release_type, *changelog_files)
-    __add_release_to_changelog('CHANGELOG.md', new_release)
+    __add_release_to_changelog(CHANGELOG_FILE, new_release)
 
     for changelog_file in changelog_files:
         __write_lines(changelog_file, [''])
+
+
+def __get_latest_changelog() -> str:
+    changelog = ''
+    lines = __read_lines(CHANGELOG_FILE)
+    offset = 0
+
+    for offset, line in enumerate(lines):
+        if line.startswith(PREFIX_SUB_HEADER):
+            break
+
+    for line in lines[offset + 2:]:
+        if line.startswith(PREFIX_SUB_HEADER):
+            break
+
+        if line.startswith('```{'):
+            changelog += '***'
+        elif line.startswith('```'):
+            changelog = changelog.rstrip('\n')
+            changelog += '***\n'
+        else:
+            changelog += line
+
+    return changelog.rstrip('\n')
 
 
 def validate_changelog_main():
@@ -256,3 +282,7 @@ def update_changelog_feature():
 
 def update_changelog_bugfix():
     __update_changelog(ReleaseType.PATCH, CHANGELOG_FILE_BUGFIX)
+
+
+def print_latest_changelog():
+    print(__get_latest_changelog())
