@@ -6,6 +6,34 @@ tocdepth: 2
 
 # Release Notes
 
+## Version 10.0.0 (Nov. 6th, 2024)
+
+A major release that comes with the following changes.
+
+```{warning}
+This release comes with API changes. For an updated overview of the available parameters and command line arguments, please refer to the [documentation](https://documentation/en/10.0.0/).
+```
+
+### New Features
+
+- This is a new feature from the main branch
+- This is another feature from the main branch
+- This is a new feature
+- This is another feature
+
+### Fixes
+
+- This is a fix from the main branch
+- This is a fix from the feature branch
+- This is a fix
+- This is another fix
+- And yet another fix
+
+### API Changes
+
+- This is an API change
+- This is another API change
+
 ## Version 9.0.0 (Nov. 6th, 2024)
 
 A major release that comes with the following changes.
