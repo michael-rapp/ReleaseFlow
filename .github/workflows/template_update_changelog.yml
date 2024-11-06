@@ -6,6 +6,11 @@ on:
       release_branch:
         required: true
         type: string
+    secrets:
+      app_id:
+        required: true
+      app_private_key:
+        required: true
     outputs:
       release_version:
         value: ${{ jobs.update_changelog.outputs.release_version }}
@@ -23,8 +28,8 @@ jobs:
         uses: actions/create-github-app-token@v1
         id: generate-token
         with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.app_id }}
+          private-key: ${{ secrets.app_private_key }}
       - name: Checkout
         uses: actions/checkout@v4
         with:
