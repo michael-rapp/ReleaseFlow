@@ -38,17 +38,9 @@ jobs:
           ref: ${{ inputs.release_branch }}
       - name: Setup git
         uses: fregante/setup-git-user@v2
-      - name: Update main changelog
-        if: ${{ inputs.release_branch == 'main' }}
-        run: python -c "import changelog; changelog.update_changelog_main()"
-      - name: Update feature changelog
-        if: ${{ inputs.release_branch == 'feature' }}
-        run: python -c "import changelog; changelog.update_changelog_feature()"
-      - name: Update bugfix changelog
-        if: ${{ inputs.release_branch == 'bugfix' }}
-        run: python -c "import changelog; changelog.update_changelog_bugfix()"
-      - name: Commit updated changelog
+      - name: Update changelog
         run: |
+          python -c "import changelog; changelog.update_changelog_${{ inputs.release_branch }}()"
           git add .changelog-*.md
           git add CHANGELOG.md
           git commit -m "[Bot] Update changelog."
