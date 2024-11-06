@@ -47,7 +47,17 @@ jobs:
           git push
       - name: Save version to output
         id: print_version
-        run: echo "version=$(python -c "import update_version; update_version.print_current_version()")" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=$(python -c "import update_version; update_version.print_current_version()")
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "version<<$EOF" >> $GITHUB_OUTPUT
+          echo "$VERSION" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
       - name: Save changelog to output
         id: print_latest_changelog
-        run: echo "changelog=$(python -c "import changelog; changelog.print_latest_changelog()")" >> $GITHUB_OUTPUT
+        run: |
+          CHANGELOG=$(python -c "import changelog; changelog.print_latest_changelog()")
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
