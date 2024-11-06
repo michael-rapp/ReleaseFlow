@@ -1,17 +1,17 @@
 ---
-name: Trigger bugfix release
+name: Trigger release
 on: workflow_dispatch
 jobs:
   update_changelog:
     name: Update changelog
     uses: ./.github/workflows/template_update_changelog.yml
     with:
-      release_branch: bugfix
+      release_branch: ${{ github.ref_name }}
   release:
     needs: update_changelog
     name: Create release
     uses: ./.github/workflows/template_release.yml
     with:
-      release_branch: bugfix
+      release_branch: ${{ github.ref_name }}
       release_version: ${{ needs.update_changelog.outputs.release_version }}
       changelog: ${{ needs.update_changelog.outputs.latest_changelog }}
