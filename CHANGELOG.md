@@ -10,10 +10,6 @@ tocdepth: 2
 
 A major release that comes with the following changes.
 
-## Version 9.0.0 (Nov. 6th, 2024)
-
-A major release that comes with the following changes.
-
 ```{warning}
 This release comes with API changes. For an updated overview of the available parameters and command line arguments, please refer to the [documentation](https://documentation/en/9.0.0/).
 ```
