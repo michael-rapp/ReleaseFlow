@@ -7,6 +7,9 @@ jobs:
     uses: ./.github/workflows/template_update_changelog.yml
     with:
       release_branch: ${{ github.ref_name }}
+    secrets:
+      app_id: ${{ secrets.APP_ID }}
+      app_private_key: ${{ secrets.APP_PRIVATE_KEY }}
   release:
     needs: update_changelog
     name: Create release
@@ -15,3 +18,6 @@ jobs:
       release_branch: ${{ github.ref_name }}
       release_version: ${{ needs.update_changelog.outputs.release_version }}
       changelog: ${{ needs.update_changelog.outputs.latest_changelog }}
+    secrets:
+      app_id: ${{ secrets.APP_ID }}
+      app_private_key: ${{ secrets.APP_PRIVATE_KEY }}
