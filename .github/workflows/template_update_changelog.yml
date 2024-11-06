@@ -1,0 +1,55 @@
+---
+name: Update changelog
+on:
+  workflow_call:
+    inputs:
+      release_branch:
+        required: true
+        type: string
+    outputs:
+      release_version:
+        value: ${{ jobs.update_changelog.outputs.release_version }}
+      latest_changelog:
+        value: ${{ jobs.update_changelog.outputs.latest_changelog }}
+jobs:
+  update_changelog:
+    name: Update changelog
+    runs-on: ubuntu-latest
+    outputs:
+      release_version: ${{ steps.print_version.outputs.version }}
+      latest_changelog: ${{ steps.print_latest_changelog.outputs.changelog }}
+    steps:
+      - name: Generate token
+        uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate-token.outputs.token }}
+      - name: Setup git
+        uses: fregante/setup-git-user@v2
+      - name: Checkout release branch
+        run: git checkout ${{ inputs.release_branch }}
+      - name: Update main changelog
+        if: ${{ inputs.release_branch == 'main' }}
+        run: python -c "import changelog; changelog.update_changelog_main()"
+      - name: Update feature changelog
+        if: ${{ inputs.release_branch == 'feature' }}
+        run: python -c "import changelog; changelog.update_changelog_feature()"
+      - name: Update bugfix changelog
+        if: ${{ inputs.release_branch == 'bugfix' }}
+        run: python -c "import changelog; changelog.update_changelog_bugfix()"
+      - name: Commit updated changelog
+        run: |
+          git add .changelog-*.md
+          git add CHANGELOG.md
+          git commit -m "[Bot] Update changelog."
+          git push
+      - id: print_version
+        run: echo "version=$(python -c "import update_version; update_version.print_current_version()")" >> $GITHUB_OUTPUT
+      - id: print_latest_changelog
+        run: echo "changelog=$(python -c "import changelog; changelog.print_latest_changelog()")" >> $GITHUB_OUTPUT
