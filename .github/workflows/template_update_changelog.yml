@@ -35,10 +35,9 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ steps.generate-token.outputs.token }}
+          ref: ${{ inputs.release_branch }}
       - name: Setup git
         uses: fregante/setup-git-user@v2
-      - name: Checkout release branch
-        run: git checkout ${{ inputs.release_branch }}
       - name: Update main changelog
         if: ${{ inputs.release_branch == 'main' }}
         run: python -c "import changelog; changelog.update_changelog_main()"
